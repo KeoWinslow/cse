@@ -36,9 +36,6 @@ class Flashlight(Item):
         self.name = 'LED Flashlight'
         self.color = 'Black'
 
-    def drop(self):
-        print("You drop the %s" % self.name)
-
     def item(self):
         if self.description:
             self.description = True
@@ -57,6 +54,15 @@ class Sack(Item):
 
     def pick_up(self):
         print('You pick up the %s bag' % self.material)
+
+
+class Trap(Item):
+    def __init__(self, name, description, weight, color, material, size):
+        super(Trap, self).__init__(name, description, weight, color, material, size)
+        self.name = 'Bear Trap'
+        self.weight = 8.00
+        self.color = 'Brown'
+        self.material = 'Rusty'
 
 
 class Rope(Item):
@@ -214,6 +220,12 @@ class Axe(Weapon):
 
     def pick_up(self):
         print('You pick up the axe')
+
+
+class Knives(Weapon):
+    def __init__(self, name, description, weight, color, material, size):
+        super(Knives, self).__init__(name, description, weight, color, material, size)
+        self.name = 'Pocket Knives'
 
 
 class Nunchaku(Weapon):
@@ -541,6 +553,11 @@ class AR(Firearm):
 class Explosive(Item):
     def __init__(self, name, description, weight, color, material, size, damage):
         super(Explosive, self).__init__(name, description, weight, color, material, size)
+        self.name = name
+        self.description = description
+        self.weight = weight
+        self.color = color
+        self.material = material
         self.damage_hit = damage
 
 
@@ -565,6 +582,11 @@ class AT(Explosive):
 class Attachment(Item):
     def __init__(self, name, description, weight, color, material, size, damage):
         super(Attachment, self).__init__(name, description, weight, color, material, size)
+        self.name = name
+        self.description = description
+        self.weight = weight
+        self.color = color
+        self.material = material
         self.damage_hit = damage
         self.damage = 0
 
@@ -602,7 +624,7 @@ class HScope(Attachment):
 
 
 class Character(object):
-    def __init__(self, name, description, health, attack, death, dialogue, status):
+    def __init__(self, name, description, health, attack, death, dialogue, status, interaction):
         self.name = name
         self.description = description
         self.health = health
@@ -610,20 +632,29 @@ class Character(object):
         self.death = death
         self.dialogue = dialogue
         self.status = status
+        self.interaction = interaction
         self.inventory = []
 
-    def take(self, item):
+    def take(self, _item):
         self.inventory.append(item)
-        print("You pick up the %s" % item.name)
+        print("You pick up the %s" % _item.name)
 
-    def drop(self, item):
+    def drop(self, _item):
         self.inventory.pop(item)
         print('You drop the %s' % item.name)
 
+    def throw(self, _item):
+        self.inventory.pop(item)
+        print('You throw the %s' % item.name)
+
+    def interaction(self, _character):
+        self.interaction(character)
+        print('You come across a Masked Thief')
+
 
 class Player1(Character):
-    def __init__(self, name, description, health, attack, death, dialogue, status):
-        super(Player1, self).__init__(name, description, health, attack, death, dialogue, status)
+    def __init__(self, name, description, health, attack, death, dialogue, status, interaction):
+        super(Player1, self).__init__(name, description, health, attack, death, dialogue, status, interaction)
         self.name = 'Player1'
         self.description = description
         self.health = 100
@@ -631,6 +662,7 @@ class Player1(Character):
         self.death = death
         self.dialogue = dialogue
         self.status = status
+        self.interaction = interaction
 
     def name(self):
             print("Player1 name is %s" % self.name)
@@ -668,8 +700,8 @@ class Player1(Character):
 
 
 class Troll(Character):
-    def __init__(self, name, description, health, attack, death, dialogue, status):
-        super(Troll, self).__init__(name, description, health, attack, death, dialogue, status)
+    def __init__(self, name, description, health, attack, death, dialogue, status, interaction):
+        super(Troll, self).__init__(name, description, health, attack, death, dialogue, status, interaction)
         self.name = 'Troll'
         self.description = description
         self.health = 100
@@ -677,11 +709,7 @@ class Troll(Character):
         self.death = death
         self.dialogue = dialogue
         self.status = status
-
-    def dialogue(self):
-        if self.dialogue:
-            self.dialogue = True
-            print('You shall not pass human')
+        self.interaction = interaction
 
     def attack(self):
         if self.attack:
@@ -691,10 +719,14 @@ class Troll(Character):
             self.attack = False
             print('Nothing happens')
 
+    def interaction(self, _character):
+        self.interaction(character)
+        print('The troll sees a human approaching him')
+
 
 class Civilian(Character):
-    def __init__(self, name, description, health, attack, death, dialogue, status):
-        super(Civilian, self). __init__(name, description, health, attack, death, dialogue, status)
+    def __init__(self, name, description, health, attack, death, dialogue, status, interaction):
+        super(Civilian, self). __init__(name, description, health, attack, death, dialogue, status, interaction)
         self.name = 'Civilian'
         self.description = description
         self.health = 100
@@ -702,11 +734,12 @@ class Civilian(Character):
         self.death = death
         self.dialogue = dialogue
         self.status = status
+        self.interaction = interaction
 
 
 class Thief(Character):
-    def __init__(self, name, description, health, attack, death, dialogue, status):
-        super(Thief, self).__init__(name, description, health, attack, death, dialogue, status)
+    def __init__(self, name, description, health, attack, death, dialogue, status, interaction):
+        super(Thief, self).__init__(name, description, health, attack, death, dialogue, status, interaction)
         self.name = 'Masked Thief'
         self.description = description
         self.health = 100
@@ -714,11 +747,12 @@ class Thief(Character):
         self.death = death
         self.dialogue = dialogue
         self.status = status
+        self.interaction = interaction
 
     def attack(self):
         if self.attack:
             self.attack = True
-            print("The masked thief charges at you with his knife")
+            print("The masked thief charges at you")
         else:
             if self.attack:
                 self.attack = False
@@ -726,8 +760,8 @@ class Thief(Character):
 
 
 class Inmate(Character):
-    def __init__(self, name, description, health, attack, death, dialogue, status):
-        super(Inmate, self).__init__(name, description, health, attack, death, dialogue, status)
+    def __init__(self, name, description, health, attack, death, dialogue, status, interaction):
+        super(Inmate, self).__init__(name, description, health, attack, death, dialogue, status, interaction)
         self.name = 'Prison Inmate'
         self.description = description
         self.health = 100
@@ -735,23 +769,29 @@ class Inmate(Character):
         self.death = death
         self.dialogue = dialogue
         self.status = status
+        self.interaction = interaction
+
+    def attack(self):
+        if self.attack:
+            self.attack = True
+            print('The Inmate approaches you')
 
 
 list_of_characters = [Player1, Troll, Civilian, Thief, Inmate]
 
-character = Character('Character', None, None, None, None, None, None)
-player1 = Player1('Player1', None, 100, None, None, None, None)
-troll = Troll('Troll', None, 100, None, None, None, None)
-civilian = Civilian('Civilian', None, 100, None, None, None, None)
-thief = Thief('Masked Thief', None, 100, None, None, None, None)
-inmate = Inmate('Prison Inmate', None, 100, None, None, None, None)
+character = Character('Character', None, None, None, None, None, None, 'You come across a Masked Thief')
+player1 = Player1('Player1', None, 100, None, None, None, None, None)
+troll = Troll('Troll', None, 100, None, None, None, None, 'The troll sees a human approaching him')
+civilian = Civilian('Civilian', None, 100, None, None, None, None, None)
+thief = Thief('Masked Thief', None, 100, None, None, None, None, None)
+inmate = Inmate('Prison Inmate', None, 100, None, None, None, None, None)
 
 north_hospital = Room('North of Hospital', None, 'west_kin', 'east_yale', None, None, None, None, None,
                       'You are north of Hospital.')
 west_kin = Room('West of Kin', None, None, None, None, 'east_hay_fields', None, 'west_bunker', None,
-                'You are west of Kin.')
+                'You are west of Kin. You encounter another Civilian')
 east_vernal = Room('East of Vernal', None, None, 'east_tower', None, None, None, None, 'north_garage',
-                   'You are east of Vernal.')
+                   'You are east of Vernal. You encounter a Masked Thief')
 north_garage = Room('North of Garage', None, None, 'north_vernal', None, None, 'west_hark', None, None,
                     'You are north of Garage.')
 southeast_trinity = Room('Southeast of Trinity', None, None, None, None, None, 'southeast_cemetery',
@@ -767,7 +807,7 @@ east_hay_field = Room('East of Hayfield', None, None, None, None, None, None, No
 south_mansion = Room('South of Mansion', None, None, None, None, None, 'west_bunker', None, None,
                      'You are south of Mansion.')
 east_radio_tower = Room('East of Tower', None, None, None, None, 'east_yale', None, None, 'south_mansion',
-                        'You are east of Radio Tower.')
+                        'You are east of Radio Tower. There is a Troll here')
 west_korri = Room('West of Korri', None, None, None, None, None, None, 'east_base', None,
                   'You are west of Korri.')
 east_yale = Room('East of Yale', 'south_tower', 'south_mansion', None, None, None, None, None, None,
@@ -785,6 +825,7 @@ west_factory = Room('West of Factory', 'southeast_cemetery', None, None, None, N
 
 flashlight = Flashlight('LED Flashlight', False, False, 'Black', False, False)
 sack = Sack('Brown sack', False, 'Heavy', 'Tan', 'Leather', False)
+trap = Trap('Bear Trap', False, 8.00, 'Brown', 'Rusty', False)
 rope = Rope('Climbing Rope', False, False, 'Tan', 'Nylon', False)
 apple = Apple('Apple', False, False, 'Red', False, False)
 pepper = Pepper('Bell Pepper', 'Red Bell Pepper found in sack', False, 'Red', False, False)
@@ -795,8 +836,9 @@ egg = Egg("Egg", False, False, 'Turquoise', 'Jeweled', False)
 dagger = Dagger('Dagger', False, 1.02, False, 'Metal', 'Rusty', False)
 pan = Pan('Frying Pan', False, 2.00, 'Black', False, 'Black Metal Rust', False)
 axe = Axe('Axe', False, False, False, 'Wood', False, False)
+knives = Knives('Pocket Knives', False, False, False, False, False)
 nunchaku = Nunchaku('Nunchucks', False, False, 'Black', False, 'Metal', False)
-bat = Bat("Bat", False, False, False, 'Metal', False)
+bat = Bat('Bat', False, False, False, 'Metal', False)
 boots = Boots('Leather Boots', False, False, 'Brown', 'Leather', False)
 jeans = Jeans('Jeans', 'Black Jean Slacks', False, 'Black', False, False)
 vest = Vest('Armored Vest', False, False, 'Black', False, False)
@@ -828,11 +870,11 @@ qscope = QScope('8x Scope', False, False, False, False, False, 0)
 hscope = HScope('16x Scope', False, False, False, False, False, 0)
 
 
-list_of_items = [flashlight, sack, rope, apple, pepper, bottle, drink, soda, egg,
-                 dagger, pan, axe, nunchaku, bat, boots, jeans, vest, coat, jacket,
-                 helmet, gloves, potion, medication, painkillers, bandages, crossbow,
-                 ak, scar, remington, tactical, m4, glock, revolver, sniper, ar, grenade,
-                 at, lscope, mscope, qscope, hscope]
+list_of_items = [flashlight, sack, trap, rope, apple, pepper, bottle, drink, soda, egg,
+                 dagger, pan, knives, axe, nunchaku, bat, boots, jeans, vest, coat,
+                 jacket, helmet, gloves, potion, medication, painkillers, bandages,
+                 crossbow, ak, scar, remington, tactical, m4, glock, revolver, sniper,
+                 ar, grenade, at, lscope, mscope, qscope, hscope]
 
 list_of_rooms = [south_tower, southwest_docks, west_factory, west_kin, north_hospital, north_prison,
                  north_garage, east_vernal, east_yale, east_base, east_radio_tower, southeast_cemetery,
@@ -840,9 +882,15 @@ list_of_rooms = [south_tower, southwest_docks, west_factory, west_kin, north_hos
 
 
 def randomize_item_locations():
-    for item in list_of_items:
+    for _item in list_of_items:
         selected_room = random.choice(list_of_rooms)
-        selected_room.items.append(item)
+        selected_room.items.append(_item)
+
+
+def randomize_character_locations():
+    for _character in list_of_characters:
+        selected_room = random.choice(list_of_characters)
+        selected_room.characters.append(_character)
 
 
 randomize_item_locations()
@@ -875,6 +923,59 @@ while True:
             if item_requested.lower() == item.name.lower():
                 player1.drop(item)
 
+    if 'throw' in command:
+        item_requested = command[8:]
+        for item in current_node.items:
+            if item_requested.lower() == item.name.lower():
+                player1.throw(item)
+    if 'ne' in command:
+        character = input('CHAT: You are west of Kin. You encounter a Civilian.')
+        if command == 'Turn around':
+            print('You turn around')
+        character = input('You punch the Civilian')
+        print('You dive out the window')
+    if 'nw' in command:
+        character = input('CHAT: You are east of Yale')
+        if 'inspect' in command:
+            print('You look around the room')
+        if list_of_items in list_of_rooms:
+            print("There are the following items in the room:")
+            for item in current_node.items:
+                print(item.name)
+    if command == 'use Flashlight':
+        print('You turn on the Flashlight in the dark Hospital')
+    if command == 'use Bear Trap':
+        print('You set up the Bear Trap')
+    if command == 'use Health Potion':
+        print('You drink the potion')
+    if command == 'use Bandages':
+        print('You wrap yourself up')
+    if command == 'use AK-47':
+        print('You fire bullets from the AK-47, shooting the Inmate')
+    if command == 'use SCAR-H':
+        print('You fire bullets from the SCAR-H')
+    if command == 'use Remington':
+        print('You fire Buckshot shells from the Remington 870')
+    if command == 'use Tactical':
+        print('You smack the Civilian with the bump of the Shotgun')
+    if command == 'use M4':
+        print('You pull the gun trigger, but it gets jammed')
+    if command == 'use Glock':
+        print('You fire bullets at the Thief')
+    if command == 'use Revolver':
+        print('You aim the Revolver, but nothing comes out of the gun')
+    if command == 'use Sniper':
+        print('You use the Rifle for sniper practice')
+    if command == 'use AR-15':
+        print('You start firing AR bullets in the air')
+    if command == 'use AT-14':
+        print('You launch a rocket from the AT-14 and it blows up the East Building')
+    if command == 'use Crossbow':
+        print('You fire an arrow')
+    if command == 'use Bat':
+        print('You smack yourself with the bat and no damage is taken')
+    if command == 'use Knives':
+        print('You stab the Inmate with the Knife')
     if command == 'inspect':
         print('You look around the room')
     if command == 'Kill self':
@@ -884,6 +985,9 @@ while True:
         print()
     if command == 'drop Brown sack':
         item = input('You dropped the Brown Sack')
+        print()
+    if command == 'drop Bear Trap':
+        item = input('You dropped the Bear Trap')
         print()
     if command == 'drop Rope':
         item = input('You dropped the Climbing Rope')
@@ -911,6 +1015,15 @@ while True:
         print()
     if command == 'drop Pan':
         item = input('You dropped the Frying Pan')
+        print()
+    if command == 'drop Pocket Knives':
+        item = input('You dropped the Pocket Knives')
+        print()
+    if 'Throw Knives' in command:
+        item = input('You throw the Pocket Knives')
+        print()
+    if 'Throw Grenade' in command:
+        item = input('You throw the Grenade')
         print()
     if command == 'drop Axe':
         item = input('You dropped the Axe')
@@ -981,7 +1094,7 @@ while True:
     if command == 'drop Grenade':
         item = input('You dropped the Grenade')
         print()
-    if command == 'drop AT Rocket':
+    if command == 'drop AT-14':
         item = input('You dropped the AT-14 Rocket Grenade')
         print()
     if command == 'drop 2x Scope':
@@ -1008,6 +1121,30 @@ while True:
     if 'attach 16x' in command:
         item = input('You attach the 16x Scope')
         print()
+
+    if 'Interact' in command:
+        character = input('CHAT: You see a Masked Thief, interact with?')
+        if command == 'Yes':
+            print('Yes')
+        character = input('Masked Thief: Greetings...')
+        if command == 'Where do you come from?':
+            print('Where do you come from?')
+            character = input('Player1: Where do you come from')
+        print('Dialogue: There is a brief silence')
+        character = input('CHAT: The masked Thief stabs you with a knife')
+        print('CHAT: You die')
+    if 'Inmate' in command:
+        character = input('CHAT: Would you like to interact with the Inmate?')
+        if command == 'Yes':
+            print('Yes')
+        character = input('Player1: Greetings...')
+        if command == 'Give me your money!':
+            print('Give me your money!')
+            character = input('Player1: Give me your money')
+        character = input('Player1: You stab the Inmate')
+        print('You walk away casually as the Inmate suffers from the stab wound')
+        print('CHAT: The Inmate dies')
+
     if command in short_directions:
         position = short_directions.index(command)
         command = directions[position]
